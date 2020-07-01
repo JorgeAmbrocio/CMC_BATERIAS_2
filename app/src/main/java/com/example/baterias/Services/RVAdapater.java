@@ -1,4 +1,4 @@
-package com.example.baterias.conexion;
+package com.example.baterias.Services;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
