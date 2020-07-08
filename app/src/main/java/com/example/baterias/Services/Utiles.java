@@ -17,6 +17,7 @@ import java.io.OutputStreamWriter;
 public class Utiles  {
     public static Context contexto;
     public static String strIP;
+    public static String strId;
     public static String strRelativePath;
     private static String strNombreArchivo = "token.txt";
 

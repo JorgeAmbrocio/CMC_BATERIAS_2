@@ -45,7 +45,7 @@ public class RVAdapater extends RecyclerView.Adapter<RVAdapater.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.tvMarca.setText(this.listaBateria.get(position).marcaBateria);
-        holder.tvModeloSKU.setText("SKU: "+this.listaBateria.get(position).skuBateria + " modelo: " + this.listaBateria.get(position).modeloBateria);
+        holder.tvModeloSKU.setText("sku: "+this.listaBateria.get(position).skuBateria + " modelo: " + this.listaBateria.get(position).modeloBateria);
         holder.tvPosicion.setText(this.listaBateria.get(position).posicion);
 
         try {
