@@ -225,6 +225,7 @@ public class APIbaterias {
             }
 
         }catch (Exception e){
+            String mensaje = e.getMessage();
             return null;
         }
 

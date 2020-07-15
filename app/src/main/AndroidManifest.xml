@@ -13,7 +13,8 @@
         android:label="VIVE TU HOGAR"
         android:roundIcon="@mipmap/ic_cemaco_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".BateriasActivity"
             android:screenOrientation="landscape" />

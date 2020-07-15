@@ -16,7 +16,7 @@
 
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="100px">
+            android:layout_height="wrap_content">
 
             <TableRow
                 android:layout_width="match_parent"
@@ -68,7 +68,7 @@
                         android:id="@+id/textView4"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp" />
+                        android:textSize="2px" />
 
                 </LinearLayout>
 
@@ -93,8 +93,8 @@
                         android:text="rodado"
                         android:textAlignment="inherit"
                         android:textColor="#505050"
-                        android:thumbTint="@color/VerdeCemaco"
-                        android:textSize="20sp" />
+                        android:textSize="20sp"
+                        android:thumbTint="@color/VerdeCemaco" />
                 </LinearLayout>
 
             </TableRow>
