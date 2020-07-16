@@ -59,6 +59,8 @@ public class APIbaterias {
     public APIbaterias (){
         //this.rutaBase = "http://192.168.1.3/API_BATERIAS/api/";
         this.rutaBase = "http://10.0.0.10:3636/api/";
+        //this.rutaBase = "https://bateriascmc.azurewebsites.net/api/";
+
         this.tokenAutorizacion = Utiles.getBateriasToken();
         if (this.tokenAutorizacion == null) {
             this.getTokenFromAPI();
@@ -235,6 +237,8 @@ public class APIbaterias {
     private void getTokenFromAPI () {
         JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Acceso/" + Utiles.strIP);
         //JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Acceso/" + "192.168.1.2");
+        //JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Acceso/" + "143.190.230.128");
+
         try {
             for (int i = 0 ; i < jsonArray.length(); i ++){
                 String token = jsonArray.getString(i);
