@@ -15,7 +15,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.example.baterias.Services.Utiles;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,14 +24,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        try {
-            Utiles.contexto = this;
-            // obtener la ip del dispositivo
-            WifiManager manager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-            Utiles.strIP = Formatter.formatIpAddress(manager.getConnectionInfo().getIpAddress());
-        }catch ( Exception e) {
-            Toast.makeText(this, "No se ha podio obtener IPV4", Toast.LENGTH_SHORT).show();
-        }
     }
 
     public void goToBaterias(View view) {
@@ -44,5 +35,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public Context getContext () {return getApplicationContext();}
 }

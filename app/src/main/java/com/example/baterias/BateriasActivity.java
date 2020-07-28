@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.example.baterias.Services.APIbaterias;
 import com.example.baterias.Services.DialogNoModelo;
 import com.example.baterias.Services.RVAdapater;
-import com.example.baterias.Services.Utiles;
 
 import java.util.ArrayList;
 
@@ -42,7 +41,7 @@ public class BateriasActivity extends AppCompatActivity implements AdapterView.O
         this.spLinea = (Spinner) findViewById(R.id.spLinea);
         this.spModelo = (Spinner) findViewById(R.id.spModelo);
 
-        this.swRodado = (Switch) findViewById(R.id.swRodado);
+        //this.swRodado = (Switch) findViewById(R.id.swRodado);
 
         this.rvBaterias = (RecyclerView) findViewById(R.id.rvBaterias);
         // indicar los acction listener
@@ -50,27 +49,6 @@ public class BateriasActivity extends AppCompatActivity implements AdapterView.O
         this.spMarca.setOnItemSelectedListener(this);
         this.spLinea.setOnItemSelectedListener(this);
         this.spModelo.setOnItemSelectedListener(this);
-
-        this.swRodado.setChecked(false);
-        this.swRodado.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (swRodado.isChecked()) {
-                    // s+i está activado, es rodado
-                    strProcedencia = "Rodado";
-                }else {
-                    // no está activado, es agencia
-                    strProcedencia = "Agencia";
-                }
-
-                if (getItemSelected(spTipo).equals("MOTOCICLETA")) {
-                    strProcedencia = "NA";
-                }
-
-                ejecutarCambios(spLinea);
-
-            }
-        });
 
         this.llenarTipos();
         this.rvBaterias.setLayoutManager(new LinearLayoutManager(this));

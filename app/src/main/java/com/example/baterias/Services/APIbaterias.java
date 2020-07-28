@@ -53,18 +53,13 @@ public class APIbaterias {
     }
     // --------------------------------------------------------------
     private String rutaBase;
-    private String tokenAutorizacion = null;
     private ArrayList<Foto> fotos = new ArrayList<>();
     private ArrayList<Tipo> tipos = null;
     public APIbaterias (){
-        //this.rutaBase = "http://192.168.1.3/API_BATERIAS/api/";
-        this.rutaBase = "http://10.0.0.10:3636/api/";
+        this.rutaBase = "http://192.168.1.6/API_BATERIAS/Api/";
+        //this.rutaBase = "http://10.0.0.10:3636/api/";
         //this.rutaBase = "https://bateriascmc.azurewebsites.net/api/";
 
-        this.tokenAutorizacion = Utiles.getBateriasToken();
-        if (this.tokenAutorizacion == null) {
-            this.getTokenFromAPI();
-        }
 
     }
 
@@ -83,7 +78,6 @@ public class APIbaterias {
                     this.tipos.add(tipo_);
                 }
             } catch (Exception e) {
-                //Toast.makeText(null, "No se han podido obtener los TIPOS DE VEHÍCULOS", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -207,7 +201,6 @@ public class APIbaterias {
             URL url = new URL (ruta);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(verbo);
-            connection.setRequestProperty("Authorization","Bearer " + this.tokenAutorizacion);
             connection.connect();
 
             int response = connection.getResponseCode();
@@ -219,36 +212,16 @@ public class APIbaterias {
                 while ((inputLine = bf.readLine()) != null){
                     stringBuffer.append(inputLine);
                 }
-                connection.disconnect();
                 return  new JSONArray(stringBuffer.toString());
             }else {
-                connection.disconnect();
-                this.getTokenFromAPI();
-            }
 
+            }
+            connection.disconnect();
         }catch (Exception e){
-            String mensaje = e.getMessage();
-            return null;
+
         }
 
         return  null;
-    }
-
-    private void getTokenFromAPI () {
-        JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Acceso/" + Utiles.strIP);
-        //JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Acceso/" + "192.168.1.2");
-        //JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Acceso/" + "143.190.230.128");
-
-        try {
-            for (int i = 0 ; i < jsonArray.length(); i ++){
-                String token = jsonArray.getString(i);
-                this.tokenAutorizacion = token;
-                Utiles.setBateriasToken(token);
-                Utiles.getBateriasToken();
-            }
-        }catch (Exception e){
-            String contenido = e.getMessage();
-        }
     }
 
 }
