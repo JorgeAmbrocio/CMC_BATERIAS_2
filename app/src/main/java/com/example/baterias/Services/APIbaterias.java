@@ -2,7 +2,10 @@ package com.example.baterias.Services;
 
 import android.os.StrictMode;
 import android.util.Base64;
+import android.util.JsonReader;
 import android.widget.Toast;
+
+import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,10 +28,10 @@ public class APIbaterias {
         public String marcaBateria;
         public String modeloBateria;
         public String posicion;
-        public String idFoto;
+        public int idFoto;
 
         public byte[] fotoByte;
-        public Bateria(String skuBateria, String marcaBateria, String modeloBateria, String posicion, String idFoto) {
+        public Bateria(String skuBateria, String marcaBateria, String modeloBateria, String posicion, int idFoto) {
             this.skuBateria = skuBateria;
             this.marcaBateria = marcaBateria;
             this.modeloBateria = modeloBateria;
@@ -39,9 +42,9 @@ public class APIbaterias {
 
     public class Foto {
         public byte[] fotoByte;
-        public String idFoto;
+        public int idFoto;
 
-        public Foto(byte[] fotoByte, String idFoto) {
+        public Foto(byte[] fotoByte, int idFoto) {
             this.fotoByte = fotoByte;
             this.idFoto = idFoto;
         }
@@ -51,117 +54,65 @@ public class APIbaterias {
         public String tipo;
         public ArrayList<String> marcas;
     }
+
+    public static class Dato {
+        public int id;
+        public String dato;
+
+        @Override
+        public String toString() {
+            return this.dato;
+        }
+    }
     // --------------------------------------------------------------
     private String rutaBase;
     private ArrayList<Foto> fotos = new ArrayList<>();
-    private ArrayList<Tipo> tipos = null;
     public APIbaterias (){
-        this.rutaBase = "http://192.168.1.6/API_BATERIAS/Api/";
+        this.rutaBase = "http://192.168.1.6/API_BATERIAS_2/Api/";
         //this.rutaBase = "http://10.0.0.10:3636/api/";
         //this.rutaBase = "https://bateriascmc.azurewebsites.net/api/";
-
-
     }
 
-    public ArrayList<String> getTipos () {
-        ArrayList<String> tipos_ = new ArrayList<>();
-
-        // verifica si debe solicitar los tipos o si ya están almacenados en memoria
-        if (this.tipos == null) {
-            // no hay tipos, solicitar tipos
-            this.tipos = new ArrayList<>();
-            JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Vehiculos/getTipos");
-            try{
-                for (int i = 0 ; i < jsonArray.length(); i++) {
-                    Tipo tipo_ = new Tipo ();
-                    tipo_.tipo = jsonArray.getString(i);
-                    this.tipos.add(tipo_);
-                }
-            } catch (Exception e) {
-            }
-        }
-
-        for (Tipo t : this.tipos) {
-            tipos_.add(t.tipo);
-        }
-
-        return tipos_;
+    public ArrayList<Dato> getTipos () {
+        return this.getArrayDato(this.rutaBase + "GetTipos");
     }
 
-    public ArrayList<String> getMarcas (String tipo) {
-        ArrayList<String> retorno = new ArrayList<>();
-        for (Tipo t: this.tipos) {
-            if (t.tipo == tipo) {
-                // aún no se han consultado las marcas, obtenerlas
-                if (t.marcas == null) {
-                    t.marcas = new ArrayList<>();
-                    JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Marcas/" + tipo);
-                    try{
-                        for ( int i = 0 ; i < jsonArray.length(); i++) {
-                            t.marcas.add(jsonArray.getString(i));
-                        }
-                    }catch (Exception e) {
-                        Toast.makeText(null, "No se ha podido obtener las MARCA VEHÍCULO", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                retorno = t.marcas;
-            }
-        }
-
-        return  retorno;
+    public ArrayList<Dato> getMarcas (int tipo) {
+        return this.getArrayDato(this.rutaBase + "GetMarcas?idTipo=" + tipo);
     }
 
-    public ArrayList<String> getLineas (String marca) {
-        ArrayList<String> retorno = new ArrayList<>();
-
-        try{
-            JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Lineas/" + marca);
-            for (int i = 0 ; i < jsonArray.length(); i++){
-                retorno.add(jsonArray.getString(i));
-            }
-        } catch (Exception e){
-            Toast.makeText(null, "No se ha podido obtener las MARCA VEHÍCULO", Toast.LENGTH_SHORT).show();
-        }
-
-        return retorno;
+    public ArrayList<Dato> getLineas (int tipo, int marca) {
+        return this.getArrayDato(this.rutaBase + "GetLineas?idTipo=" + tipo + "&idMarca=" + marca);
     }
 
-    public ArrayList<String> getModelos (String marca, String linea, String procedencia) {
-        ArrayList<String> retorno  = new ArrayList<String>();
-        try {
-            JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Vehiculos/getModelos?marca=" + marca + "&linea=" + linea + "&procedencia="+procedencia);
-            for (int i = 0 ; i<jsonArray.length(); i++) {
-                retorno.add(jsonArray.getString(i));
-            }
-        } catch (Exception e) {
-            Toast.makeText(null, "No se ha podido obtener las LÍNEA VEHÍCULO", Toast.LENGTH_SHORT).show();
-        }
-        return retorno;
+    public ArrayList<Dato> getModelos (int tipo, int linea) {
+        return this.getArrayDato(this.rutaBase + "GetModelos?idTipo=" + tipo + "&idLinea=" + linea);
     }
 
-    public ArrayList<Bateria> getBaterias (String marca, String linea, String modelo, String procedencia) {
+    public ArrayList<Bateria> getBaterias (int tipo, int linea, String modelo, String procedencia) {
         ArrayList<Bateria> retorno = new ArrayList<>();
         try {
-            JSONArray jsonArray = this.getDesdeAPI("GET", this.rutaBase + "Baterias/getBaterias?marca=" + marca + "&linea=" + linea + "&modelo=" + modelo + "&procedencia=" + procedencia);
+            JSONArray jsonArray = this.getFromAPI("GET", this.rutaBase + "GetBaterias?idTipo=" + tipo + "&idLinea=" + linea + "&modelo=" + modelo + "&procedencia=" + procedencia);
             for (int i = 0 ; i < jsonArray.length() ; i++){
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String skub = jsonObject.optString("skuBateria"),
                         marcab = jsonObject.optString("marcaBateria"),
                         modelob= jsonObject.optString("modeloBateria"),
-                        posicionb= jsonObject.optString("posicion"),
-                        idfotob = jsonObject.optString("idFoto");
+                        posicionb= jsonObject.optString("posicion");
+                int idfotob = jsonObject.optInt("idFoto");
                 Foto f = this.getFoto(idfotob);
                 Bateria bateria_ = new Bateria(skub,marcab,modelob, posicionb, idfotob);
                 bateria_.fotoByte = f.fotoByte;
                 retorno.add(bateria_);
             }
         }catch (Exception e) {
-            Toast.makeText(null, "No se ha podido obtener las BATERÍAS VEHÍCULO", Toast.LENGTH_SHORT).show();
+
         }
+
         return retorno;
     }
 
-    private Foto getFoto (String id) {
+    private Foto getFoto (int id) {
         Foto foto = null;
 
         for (Foto foto_: this.fotos) {
@@ -173,25 +124,45 @@ public class APIbaterias {
 
         if (foto == null) {
             try {
-                JSONArray jsonArray = this.getDesdeAPI("GET", rutaBase + "Fotos/" + id);
+                JSONArray jsonArray = this.getFromAPI("GET", rutaBase + "GetFotos?id=" + id);
                 for (int i =  0 ; i < jsonArray.length(); i ++) {
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                     String strFoto = jsonObject.optString("foto"); // viene como un Byte[].ToString()
                     byte[] mapa = Base64.decode(strFoto, Base64.DEFAULT);
-                    foto = new Foto(mapa ,jsonObject.optString("idFoto"));
+                    foto = new Foto(mapa ,jsonObject.optInt("idFoto"));
                     this.fotos.add(foto);
                 }
             }catch (Exception e){
-                Toast.makeText(null, "No se ha podido obtener las FOTO BATERÍA", Toast.LENGTH_SHORT).show();
+
             }
         }
 
         return foto;
     }
 
+    // OBTIENE UN ARRAY DE OBJETOS DE TIPO DATO HACIENDO USO DE getFromAPI
+    private ArrayList<Dato> getArrayDato(String ruta) {
+        ArrayList<Dato> retorno = new ArrayList<>();
+
+        try {
+            JSONArray jsonArray = this.getFromAPI("GET", ruta);
+            for (int i = 0 ; i < jsonArray.length() ; i++) {
+                Dato dato = new Dato();
+                JSONObject jsonObject =  jsonArray.getJSONObject(i);
+                dato.id  = jsonObject.optInt("id");
+                dato.dato = jsonObject.optString("dato");
+
+                retorno.add(dato);
+            }
+        }catch ( Exception e){}
+
+        return retorno;
+    }
+
     // OBTIENE UN ARRAYLIST DE LA APPI
-    private JSONArray getDesdeAPI (String verbo, String ruta) {
+    private JSONArray getFromAPI (String verbo, String ruta) {
+        JSONArray retorno = null;
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         ruta = ruta.replace(" " , "%20");
@@ -203,8 +174,7 @@ public class APIbaterias {
             connection.setRequestMethod(verbo);
             connection.connect();
 
-            int response = connection.getResponseCode();
-
+            int response = connection.getResponseCode(); // verificar que la respuesta sea buena
             if (response == HttpURLConnection.HTTP_OK) {
                 BufferedReader bf = new BufferedReader( new InputStreamReader(connection.getInputStream()));
                 StringBuffer stringBuffer = new StringBuffer();
@@ -212,7 +182,15 @@ public class APIbaterias {
                 while ((inputLine = bf.readLine()) != null){
                     stringBuffer.append(inputLine);
                 }
-                return  new JSONArray(stringBuffer.toString());
+
+                JSONObject jsonObject = new JSONObject(stringBuffer.toString());
+                int estado = jsonObject.optInt("estado"); // verificar que el retorno sea correcto
+                if (estado == 1) {
+                    // todo bien
+                    retorno = (JSONArray) jsonObject.opt("datos");
+                }else {
+                    // todo mal
+                }
             }else {
 
             }
@@ -221,7 +199,8 @@ public class APIbaterias {
 
         }
 
-        return  null;
+        return  retorno;
     }
+
 
 }

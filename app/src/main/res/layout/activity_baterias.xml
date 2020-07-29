@@ -78,13 +78,37 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <TextView
+                    <RadioGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" >
+
+                        <RadioButton
+                            android:id="@+id/rbAgencia"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:checked="true"
+                            android:fontFamily="@font/londonnineteensixty"
+                            android:text="Agencia"
+                            android:textColorHighlight="#161687"
+                            android:textColorLink="#FFFFFF" />
+
+                        <RadioButton
+                            android:id="@+id/rbRodado"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Rodado"
+                            android:fontFamily="@font/londonnineteensixty"/>
+                    </RadioGroup>
+
+
+                    <!--
+                        <TextView
                         android:id="@+id/textView10"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="12sp" />
 
-                    <Switch
+                        <Switch
                         android:id="@+id/swRodado"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -95,6 +119,7 @@
                         android:textColor="#505050"
                         android:textSize="20sp"
                         android:thumbTint="@color/VerdeCemaco" />
+                    -->
                 </LinearLayout>
 
             </TableRow>

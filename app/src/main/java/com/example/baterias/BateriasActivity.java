@@ -5,10 +5,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -23,7 +25,7 @@ public class BateriasActivity extends AppCompatActivity implements AdapterView.O
 
     private APIbaterias apIbaterias = new APIbaterias();
     private Spinner spTipo, spMarca, spLinea, spModelo;
-    private Switch swRodado;
+    private RadioButton rbAgencia, rbRodado;
     private RecyclerView rvBaterias;
     private String strProcedencia = "Agencia";
 
@@ -41,14 +43,32 @@ public class BateriasActivity extends AppCompatActivity implements AdapterView.O
         this.spLinea = (Spinner) findViewById(R.id.spLinea);
         this.spModelo = (Spinner) findViewById(R.id.spModelo);
 
-        //this.swRodado = (Switch) findViewById(R.id.swRodado);
+        this.rbAgencia = (RadioButton) findViewById(R.id.rbAgencia);
+        this.rbRodado = (RadioButton) findViewById(R.id.rbRodado);
 
         this.rvBaterias = (RecyclerView) findViewById(R.id.rvBaterias);
+
         // indicar los acction listener
         this.spTipo.setOnItemSelectedListener(this);
         this.spMarca.setOnItemSelectedListener(this);
         this.spLinea.setOnItemSelectedListener(this);
         this.spModelo.setOnItemSelectedListener(this);
+
+        this.rbAgencia.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                strProcedencia = "Agencia";
+                ejecutarCambios(spLinea);
+            }
+        });
+
+        this.rbRodado.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                strProcedencia = "Rodado";
+                ejecutarCambios(spLinea);
+            }
+        });
 
         this.llenarTipos();
         this.rvBaterias.setLayoutManager(new LinearLayoutManager(this));
@@ -79,29 +99,44 @@ public class BateriasActivity extends AppCompatActivity implements AdapterView.O
         switch (adapterView.getId()){
             case R.id.spTipo:
                 // llenar marca
-                if (this.getItemSelected(this.spTipo).equals("MOTOCICLETA")) {
-                    this.strProcedencia = "NA";
-                }else{
-                    this.swRodado.setChecked(true);
-                    this.strProcedencia = "Rodado";
-                }
-                this.setSpinnerData(this.spMarca, this.apIbaterias.getMarcas(this.getItemSelected(this.spTipo)));
+                this.setSpinnerData(
+                        this.spMarca,
+                        this.apIbaterias.getMarcas(
+                                this.getItemSelected(this.spTipo).id
+                        )
+                );
                 break;
             case R.id.spMarca:
                 // llenar linea
-                this.setSpinnerData(this.spLinea, this.apIbaterias.getLineas(this.getItemSelected(this.spMarca)));
+                this.setSpinnerData(
+                        this.spLinea,
+                        this.apIbaterias.getLineas(
+                                this.getItemSelected(this.spTipo).id,
+                                this.getItemSelected(this.spMarca).id
+                        )
+                );
                 break;
             case R.id.spLinea:
                 // llenar modelo
-                this.setSpinnerData(this.spModelo, this.apIbaterias.getModelos(this.getItemSelected(this.spMarca), this.getItemSelected(this.spLinea), this.strProcedencia));
-                if (this.spModelo.getAdapter().isEmpty()) {
-                    MostrarMensajeNoModelos ();
-                }
+                this.setSpinnerData(
+                        this.spModelo,
+                        this.apIbaterias.getModelos(
+                            this.getItemSelected(this.spTipo).id,
+                            this.getItemSelected(this.spLinea).id
+                        )
+                );
                 break;
             case R.id.spModelo:
                 // ejecutar búsqueda
-                ArrayList<APIbaterias.Bateria> baterias_ = this.apIbaterias.getBaterias(this.getItemSelected(this.spMarca), this.getItemSelected(this.spLinea), this.getItemSelected(this.spModelo), this.strProcedencia);
-                RVAdapater rvAdapater = new RVAdapater(baterias_);
+                ArrayList<APIbaterias.Bateria> baterias_ = this.apIbaterias.getBaterias(
+                        this.getItemSelected(this.spTipo ).id,
+                        this.getItemSelected(this.spLinea).id,
+                        this.getItemSelected(this.spModelo).dato,
+                        this.strProcedencia);
+                if (baterias_.isEmpty()){
+                    MostrarMensajeNoModelos ();
+                }
+               RVAdapater rvAdapater = new RVAdapater(baterias_);
                 this.rvBaterias.setAdapter(rvAdapater);
                 break;
         }
@@ -112,26 +147,23 @@ public class BateriasActivity extends AppCompatActivity implements AdapterView.O
         Toast.makeText(this, "No se ha seleccionado elemento", Toast.LENGTH_SHORT).show();
     }
 
-    private String getItemSelected(Spinner spinner){
-        String r = "";
-        try {
-            r = spinner.getSelectedItem().toString();
-        }catch (Exception e){}
-
-        return r;
-    }
-
     /// funciones para
     private void llenarTipos () {
         this.setSpinnerData(this.spTipo, apIbaterias.getTipos());
     }
 
-    private void setSpinnerData (Spinner sp, ArrayList<String> ar) {
+    private APIbaterias.Dato getItemSelected(Spinner spinner){
+        APIbaterias.Dato r = new APIbaterias.Dato();
         try {
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.text_spinner);
-            for (String dato: ar) {
-                arrayAdapter.add(dato);
-            }
+            r = (APIbaterias.Dato) spinner.getSelectedItem();
+        }catch (Exception e){}
+
+        return r;
+    }
+
+    private void setSpinnerData (Spinner sp, ArrayList<APIbaterias.Dato> ar) {
+        try {
+            ArrayAdapter<APIbaterias.Dato> arrayAdapter = new ArrayAdapter<APIbaterias.Dato>(this, R.layout.text_spinner, ar);
             sp.setAdapter(arrayAdapter);
         }catch (Exception e){
 
