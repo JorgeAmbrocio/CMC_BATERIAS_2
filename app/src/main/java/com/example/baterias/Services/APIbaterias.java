@@ -68,7 +68,8 @@ public class APIbaterias {
     private String rutaBase;
     private ArrayList<Foto> fotos = new ArrayList<>();
     public APIbaterias (){
-        this.rutaBase = "http://192.168.1.6/API_BATERIAS_2/Api/";
+        //this.rutaBase = "http://192.168.1.6/API_BATERIAS_2/Api/";
+        this.rutaBase = "http://34.222.164.213/API_BATERIAS/Api/";
         //this.rutaBase = "http://10.0.0.10:3636/api/";
         //this.rutaBase = "https://bateriascmc.azurewebsites.net/api/";
     }
