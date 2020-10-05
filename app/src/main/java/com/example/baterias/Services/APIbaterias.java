@@ -68,8 +68,8 @@ public class APIbaterias {
     private String rutaBase;
     private ArrayList<Foto> fotos = new ArrayList<>();
     public APIbaterias (){
-        //this.rutaBase = "http://192.168.1.6/API_BATERIAS_2/Api/";
-        this.rutaBase = "http://34.222.164.213/API_BATERIAS/Api/";
+        this.rutaBase = "http://192.168.1.7/API_BATERIAS/Api/";
+        //this.rutaBase = "http://34.222.164.213/API_BATERIAS/Api/";
         //this.rutaBase = "http://10.0.0.10:3636/api/";
         //this.rutaBase = "https://bateriascmc.azurewebsites.net/api/";
     }
@@ -172,6 +172,7 @@ public class APIbaterias {
         try{
             URL url = new URL (ruta);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("X-token","718y4C5Z3dfWQeU/uwU1SxM0+l2E9sDtXKaMsBXpL4U=");
             connection.setRequestMethod(verbo);
             connection.connect();
 
